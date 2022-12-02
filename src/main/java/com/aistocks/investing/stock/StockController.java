@@ -22,56 +22,32 @@ import com.aistocks.investing.exception.ResourceNotFoundException;
 public class StockController {
 
     @Autowired
-    private StockRepository stockRepository;
+    private StockService service;
 
     @GetMapping
     public List<Stock> list() {
-        return stockRepository.findAll();
+        return service.list();
     }
 
     @GetMapping("{id}")
     public Stock get(@PathVariable long id) throws ResourceNotFoundException {
-
-        return findById(id);
+        return service.get(id);
     }
 
     @PostMapping
     public ResponseEntity<Stock> create(@Valid @RequestBody Stock stock) {
-        return ResponseEntity.ok(stockRepository.save(stock));
+        return ResponseEntity.ok(service.create(stock));
     }
 
     @PutMapping("{id}")
     public ResponseEntity<Stock> update(@PathVariable long id, @Valid @RequestBody Stock stock)
             throws ResourceNotFoundException {
-
-        final Stock s = findById(id);
-
-        s.setName(stock.getName());
-        s.setTicker(stock.getTicker());
-
-        return ResponseEntity.ok(stockRepository.save(s));
+        return ResponseEntity.ok(service.update(id, stock));
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<Stock> delete(@PathVariable long id) throws ResourceNotFoundException {
-
-        final Stock s = findById(id);
-
-        stockRepository.delete(s);
-
-        return ResponseEntity.ok(s);
-    }
-
-    /**
-     * Finds a stock by its ID
-     * 
-     * @param id
-     * @return
-     * @throws ResourceNotFoundException
-     */
-    private Stock findById(final long id) throws ResourceNotFoundException {
-        return stockRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Stock not found with id = " + id));
+        return ResponseEntity.ok(service.delete(id));
     }
 
 }
